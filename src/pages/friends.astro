@@ -1,0 +1,101 @@
+---
+import { z } from 'astro/zod';
+import MainGridLayout from '../layouts/MainGridLayout.astro';
+import data from '../data/friends.json';
+
+const webUrl = z.string().trim().refine(value => {
+  try {
+    const parsed = new URL(value);
+    return ['https:', 'http:'].includes(parsed.protocol) && !parsed.username && !parsed.password;
+  } catch { return false; }
+}, '友链地址必须是完整的 HTTP 或 HTTPS 网址');
+const optionalText = z.preprocess(value => value ?? '', z.string().trim());
+const avatar = optionalText.refine(value => {
+  if (!value) return true;
+  if (value.startsWith('/') && !value.startsWith('//') && !value.includes('\\')) return true;
+  try { return new URL(value).protocol === 'https:'; } catch { return false; }
+}, '头像须使用站内图片路径或 HTTPS 网址');
+const friends = z.object({
+  introduction: z.string().trim(),
+  links: z.array(z.object({
+    name: z.string().trim().min(1),
+    url: webUrl,
+    description: optionalText,
+    avatar,
+    visible: z.boolean().optional().default(true),
+  })).nullish().transform(value => value || []),
+}).parse(data);
+const links = friends.links.filter(link => link.visible);
+---
+<MainGridLayout title="友链" description="Airglow 的朋友与常去的博客">
+  <section class="card-base friends-page" data-pagefind-body>
+    <header class="friends-heading">
+      <p class="eyebrow">AIRGLOW / FRIENDS</p>
+      <h1>微光相遇<span>。</span></h1>
+      <p class="introduction">{friends.introduction}</p>
+      <div class="heading-line" aria-hidden="true"></div>
+    </header>
+    {links.length ? (
+      <div class="friends-grid">
+        {links.map(link => (
+          <a class="friend" href={link.url} target="_blank" rel="noopener noreferrer" aria-label={`访问 ${link.name}（新窗口）`}>
+            <div class="friend-avatar">
+              <span aria-hidden="true">{Array.from(link.name)[0]}</span>
+              {link.avatar && <img src={link.avatar} alt="" width="56" height="56" loading="lazy" decoding="async" referrerpolicy="no-referrer" />}
+            </div>
+            <div class="friend-copy"><h2>{link.name}</h2><p>{link.description || new URL(link.url).hostname}</p></div>
+            <span class="friend-arrow" aria-hidden="true">↗</span>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <div class="friends-empty">
+        <span class="empty-star" aria-hidden="true">✧</span>
+        <h2>期待下一束微光</h2>
+        <p>这里还没有添加友链。<br />等一位朋友，带来一个新的故事。</p>
+      </div>
+    )}
+    <footer class="friends-note"><span aria-hidden="true">✦</span> 连接彼此，也收藏不同的生活。</footer>
+  </section>
+</MainGridLayout>
+
+<script>
+  // Keep the initial visible when a remote avatar is unavailable.
+  function wireFriendAvatars() {
+    document.querySelectorAll<HTMLImageElement>('.friend-avatar img').forEach(image => {
+      const hide = () => { image.hidden = true; };
+      image.addEventListener('error', hide, { once: true });
+      if (image.complete && image.naturalWidth === 0) hide();
+    });
+  }
+  wireFriendAvatars();
+  document.addEventListener('astro:page-load', wireFriendAvatars);
+</script>
+<style>
+  .friends-page {padding:38px 36px;color:inherit;min-height:440px}
+  .eyebrow {color:var(--primary);font-size:.68rem;font-weight:700;letter-spacing:.18em;margin-bottom:16px}
+  h1 {font-size:2rem;font-weight:700;letter-spacing:-.03em;line-height:1.4;margin-bottom:14px}
+  h1 span {color:var(--primary)}
+  .introduction {font-size:.9rem;line-height:1.9;opacity:.6;max-width:36rem}
+  .heading-line {width:48px;height:3px;border-radius:3px;background:var(--primary);margin:28px 0 32px;opacity:.8}
+  .friends-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+  .friend {position:relative;display:flex;align-items:center;gap:14px;min-width:0;padding:22px 18px;border:1px solid var(--line-color);border-radius:16px;transition:background .2s,border-color .2s,transform .2s}
+  .friend:hover {background:var(--btn-plain-bg-hover);border-color:color-mix(in srgb,var(--primary) 40%,transparent);transform:translateY(-3px)}
+  .friend:focus-visible {outline:2px solid var(--primary);outline-offset:4px}
+  .friend-avatar {position:relative;flex:0 0 56px;width:56px;height:56px;border-radius:16px;overflow:hidden;display:grid;place-items:center;color:var(--primary);background:var(--btn-regular-bg);font-size:1.3rem;font-weight:700}
+  .friend-avatar img {position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .friend-avatar img[hidden] {display:none}
+  .friend-copy {min-width:0;flex:1}
+  .friend-copy h2 {font-size:1rem;font-weight:700;line-height:1.5;overflow-wrap:anywhere}
+  .friend-copy p {font-size:.76rem;opacity:.55;line-height:1.7;margin-top:6px;overflow-wrap:anywhere}
+  .friend-arrow {font-size:1.1rem;color:var(--primary);opacity:.5;align-self:flex-start}
+  .friends-empty {padding:26px 16px 42px;text-align:center;background:radial-gradient(ellipse at center,color-mix(in srgb,var(--primary) 7%,transparent),transparent 70%)}
+  .empty-star {font-size:3.4rem;color:var(--primary);opacity:.75;display:block;margin-bottom:14px}
+  .friends-empty h2 {font-size:1.15rem;font-weight:700;margin-bottom:12px}
+  .friends-empty p {font-size:.85rem;opacity:.5;line-height:1.9}
+  .friends-note {margin-top:34px;padding-top:22px;border-top:1px solid var(--line-divider);font-size:.72rem;opacity:.5;line-height:1.7}
+  .friends-note span {color:var(--primary);margin-right:8px}
+  @media(max-width:1100px){.friends-grid{grid-template-columns:1fr}}
+  @media(max-width:640px){.friends-page{padding:28px 22px}h1{font-size:1.7rem}.introduction{font-size:.83rem}.friend{padding:20px 16px}.friends-empty{padding:22px 8px 32px}}
+  @media(prefers-reduced-motion:reduce){.friend{transition:none}.friend:hover{transform:none}}
+</style>

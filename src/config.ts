@@ -16,7 +16,7 @@ export const siteConfig: SiteConfig = {
   favicon: [{ src: "/favicon/airglow.svg", sizes: "any" }],
 };
 export const navBarConfig: NavBarConfig = {
-  links: [LinkPreset.Home, LinkPreset.Archive, { name: "音乐", url: "/music/", ownerOnly: true }, LinkPreset.About],
+  links: [LinkPreset.Home, LinkPreset.Archive, { name: "音乐", url: "/music/", ownerOnly: true }, { name: "友链", url: "/friends/" }, LinkPreset.About],
 };
 export const profileConfig: ProfileConfig = {
   avatar: "/favicon/airglow.svg",

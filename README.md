@@ -42,6 +42,8 @@ pnpm new-post my-first-post
 
 私人音乐入口 `/music/` 提供按曲风与随机专辑推荐、跨设备去重历史和北京时间本周新发行。仅所有者登录后显示音乐导航和数据，目录与历史保存在 Cloudflare D1。使用与维护说明见 [docs/MUSIC.md](docs/MUSIC.md)。
 
+友链页面 `/friends/` 可在后台 **友链 → 管理友链** 中添加、排序、修改、移除或隐藏网站卡片。使用说明见 [docs/FRIENDS.md](docs/FRIENDS.md)。
+
 GitHub Actions Variables：`PUBLIC_CMS_AUTH_URL`、`PUBLIC_GISCUS_CATEGORY_ID`。这些是公开配置；未配置时后台显示设置提示，评论暂不显示。OAuth 密钥只存放在 Cloudflare Worker Secrets。
 
 已迁移至 Astro 7 与新内容集合 API，并升级 Svelte 和构建依赖。认证逻辑可用 `node --test services/github-oauth/worker.test.mjs` 检查。

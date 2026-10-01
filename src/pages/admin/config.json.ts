@@ -47,6 +47,26 @@ export const GET: APIRoute = () => {
           ],
         },
         {
+          name: "friends", label: "友链", format: "json",
+          files: [{
+            name: "friends", label: "管理友链", file: "src/data/friends.json",
+            fields: [
+              { name: "introduction", label: "页面介绍", widget: "text" },
+              {
+                name: "links", label: "友链列表", label_singular: "友链", widget: "list", required: false, default: [],
+                summary: "{{fields.name}} · {{fields.url}}", collapsed: true,
+                fields: [
+                  { name: "name", label: "网站名称", widget: "string" },
+                  { name: "url", label: "网站地址", widget: "string", pattern: ["^https?://[^\\s]+$", "请输入完整网址，例如 https://example.com"] },
+                  { name: "description", label: "网站简介", widget: "text", required: false },
+                  { name: "avatar", label: "头像 / 图标", widget: "image", required: false, hint: "可上传图片或填写 HTTPS 图片地址；不填时显示名称首字。" },
+                  { name: "visible", label: "显示这条友链", widget: "boolean", default: true },
+                ],
+              },
+            ],
+          }],
+        },
+        {
           name: "pages", label: "页面",
           files: [{
             name: "about", label: "关于 Airglow", file: "src/content/spec/about.md",
