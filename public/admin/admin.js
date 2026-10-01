@@ -13,8 +13,13 @@ window.CMS_MANUAL_INIT = true;
     const script = document.createElement("script");
     script.src = "https://unpkg.com/decap-cms@3.16.3/dist/decap-cms.js";
     script.onload = () => {
-      document.getElementById("admin-status").hidden = true;
-      window.CMS.init({ config: settings.config });
+      try {
+        window.CMS.init({ config: settings.config });
+        document.documentElement.classList.add("cms-ready");
+        document.getElementById("admin-status").hidden = true;
+      } catch {
+        status.textContent = "编辑器启动失败，请检查后台配置并刷新重试。";
+      }
     };
     script.onerror = () => { status.textContent = "编辑器加载失败，请刷新重试。"; };
     document.head.appendChild(script);

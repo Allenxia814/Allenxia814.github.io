@@ -3,6 +3,7 @@ body { margin: 0; }
 #admin-status { max-width: 520px; margin: 12vh auto; padding: 28px; }
 .back { display: block; margin-bottom: 54px; color: #70ddc5; text-decoration: none; }
 .eyebrow { color: #70ddc5; font-size: 12px; letter-spacing: .2em; margin-top: 28px; }
-h1 { font-size: clamp(28px, 5vw, 40px); }
-p { line-height: 1.8; }
+#admin-status h1 { font-size: clamp(28px, 5vw, 40px); }
+#admin-status p { line-height: 1.8; }
 .note { color: #9aafbd; font-size: 14px; padding-top: 18px; border-top: 1px solid #263a48; }
+:root.cms-ready { color-scheme: light; background: #eff0f4; color: #2b3a42; }

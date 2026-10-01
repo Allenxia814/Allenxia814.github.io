@@ -44,6 +44,8 @@ GitHub Actions Variables：`PUBLIC_CMS_AUTH_URL`、`PUBLIC_GISCUS_CATEGORY_ID`�
 
 已迁移至 Astro 7 与新内容集合 API，并升级 Svelte 和构建依赖。认证逻辑可用 `node --test services/github-oauth/worker.test.mjs` 检查。
 
+生产构建与文章隐藏检查已通过；依赖审计当前未发现已知漏洞。上线状态以 GitHub Actions 的部署结果为准，仍需完成账户授权和仓库 Pages 设置。
+
 不要把 `.env`、访问令牌或其他凭据提交到仓库。正式发布前替换示例文章并确认文章版权设置。
 
 ## 素材记录
