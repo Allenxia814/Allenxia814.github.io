@@ -1,0 +1,8 @@
+---
+import MainGridLayout from '../layouts/MainGridLayout.astro';
+import MusicRoom from '../components/music/MusicRoom.svelte';
+---
+<MainGridLayout title="音乐" description="Airglow 的私人音乐空间">
+ <meta slot="head" name="robots" content="noindex,nofollow,noarchive" />
+ <div data-pagefind-ignore><MusicRoom client:only="svelte"><div slot="fallback" class="card-base p-8">正在打开私人音乐空间…</div></MusicRoom></div>
+</MainGridLayout>

@@ -9,3 +9,11 @@ ALLOWED_USER_ID = "189645776"
 GITHUB_REPO = "Allenxia814/Allenxia814.github.io"
 
 # Set GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET and STATE_SECRET as Worker secrets.
+
+[[d1_databases]]
+binding = "MUSIC_DB"
+database_name = "airglow-music"
+database_id = "8fa1cf5f-b571-442a-8b7e-a71d1d2c154e"
+
+[triggers]
+crons = ["17 * * * *"]

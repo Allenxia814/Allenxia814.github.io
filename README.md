@@ -38,13 +38,15 @@ pnpm new-post my-first-post
 
 仓库为 `Allenxia814/Allenxia814.github.io`，生产地址为 https://allenxia814.github.io/。`.github/workflows/deploy.yml` 会在推送到 `main` 后构建并部署到 GitHub Pages。完整设置见 [部署说明](docs/DEPLOYMENT.md)。
 
-文章管理入口 `/admin/` 使用 Decap CMS，认证服务代码位于 `services/github-oauth/`，已部署到 Cloudflare；需设置专用 GitHub OAuth App 的 Client ID 和 Client secret。仅允许 GitHub 数字用户 ID `189645776` 登录。文章评论使用 giscus，Discussions 和 giscus 已配置上线。
+文章管理入口 `/admin/` 使用 Decap CMS，认证服务代码位于 `services/github-oauth/`，已部署到 Cloudflare，专用 GitHub OAuth App 的密钥已配置。仅允许 GitHub 数字用户 ID `189645776` 登录。文章评论使用 giscus，Discussions 和 giscus 已配置上线。
+
+私人音乐入口 `/music/` 提供按曲风与随机专辑推荐、跨设备去重历史和北京时间本周新发行。仅所有者登录后显示音乐导航和数据，目录与历史保存在 Cloudflare D1。使用与维护说明见 [docs/MUSIC.md](docs/MUSIC.md)。
 
 GitHub Actions Variables：`PUBLIC_CMS_AUTH_URL`、`PUBLIC_GISCUS_CATEGORY_ID`。这些是公开配置；未配置时后台显示设置提示，评论暂不显示。OAuth 密钥只存放在 Cloudflare Worker Secrets。
 
 已迁移至 Astro 7 与新内容集合 API，并升级 Svelte 和构建依赖。认证逻辑可用 `node --test services/github-oauth/worker.test.mjs` 检查。
 
-生产构建与文章隐藏检查已通过；依赖审计当前未发现已知漏洞。上线状态以 GitHub Actions 的部署结果为准，GitHub Pages 已上线，后台登录仍需完成专用 OAuth App 的密钥设置。
+生产构建与文章隐藏检查已通过；依赖审计当前未发现已知漏洞。上线状态以 GitHub Actions 的部署结果为准，GitHub Pages 已上线，后台 OAuth 密钥已配置，仍需用户完成浏览器登录验证。
 
 不要把 `.env`、访问令牌或其他凭据提交到仓库。正式发布前替换示例文章并确认文章版权设置。
 

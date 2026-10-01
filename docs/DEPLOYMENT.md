@@ -24,7 +24,7 @@
 
 ## 3. 仅自己可登录的文章后台
 
-当前验证服务已部署在 https://airglow-github-auth.github-oauth.workers.dev ，`STATE_SECRET` 已在 Cloudflare 中配置。还需要你注册 GitHub OAuth App 并添加 `GITHUB_CLIENT_ID` 和 `GITHUB_CLIENT_SECRET`。
+当前验证服务已部署在 https://airglow-github-auth.github-oauth.workers.dev ，`STATE_SECRET`、`GITHUB_CLIENT_ID` 和 `GITHUB_CLIENT_SECRET` 均已配置，认证入口已验证可跳转到 GitHub。
 
 GitHub Pages 运行静态页面；认证端独立运行在 Cloudflare Worker。认证端核对 GitHub 数字用户 ID **189645776** 和仓库写入权限，只向此账号的后台会话返回访问令牌。其他登录用户会被拒绝。
 

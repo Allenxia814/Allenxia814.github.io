@@ -1,3 +1,4 @@
+import { musicFetch, issueMusicSession, scheduledMusic } from './music.mjs';
 const COOKIE = "__Host-airglow-oauth";
 const MAX_AGE = 600;
 const encoder = new TextEncoder();
@@ -36,9 +37,9 @@ function textResponse(text, status) {
 function scriptValue(value) {
   return JSON.stringify(value).replaceAll("<", "\\u003c");
 }
-function popupResponse(origin, payload, success = false) {
+function popupResponse(origin, payload, success = false, purpose = "github") {
   const nonce = base64url(crypto.getRandomValues(new Uint8Array(16)));
-  const message = `authorization:github:${success ? "success" : "error"}:${JSON.stringify(payload)}`;
+  const message = `authorization:${purpose}:${success ? "success" : "error"}:${JSON.stringify(payload)}`;
   // Decap's authenticator expects this handshake from the OAuth origin.
   // The token is delivered exclusively to the configured blog origin.
   const html = `<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>Airglow 登录</title><p>正在完成 GitHub 登录。请保持博客后台页面打开。</p><script nonce="${nonce}">
@@ -46,12 +47,12 @@ function popupResponse(origin, payload, success = false) {
     const message = ${scriptValue(message)};
     if (window.opener) {
       const receive = event => {
-        if (event.origin !== target || event.source !== window.opener || event.data !== "authorizing:github") return;
+        if (event.origin !== target || event.source !== window.opener || event.data !== ${scriptValue(`authorizing:${purpose}`)}) return;
         window.removeEventListener("message", receive);
         window.opener.postMessage(message, target);
       };
       window.addEventListener("message", receive);
-      window.opener.postMessage("authorizing:github", target);
+      window.opener.postMessage(${scriptValue(`authorizing:${purpose}`)}, target);
     }
   </script></html>`;
   return new Response(html, { headers: {
@@ -75,8 +76,10 @@ async function revokeToken(token, env) {
 }
 
 export default {
+  async scheduled(controller, env) { await scheduledMusic(controller, env); },
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname.startsWith('/music/')) return musicFetch(request, env);
     if (request.method !== "GET") return textResponse("Method not allowed", 405);
     if (url.pathname !== "/auth" && url.pathname !== "/callback") return textResponse("Airglow GitHub OAuth", 200);
     let site;
@@ -90,29 +93,34 @@ export default {
     }
     const callbackUrl = `${url.origin}/callback`;
     if (url.pathname === "/auth") {
+      const purpose = url.searchParams.get('purpose') || 'github';
+      if (!['github', 'music'].includes(purpose)) return textResponse('Invalid purpose', 400);
+      if (purpose === 'music' && !env.MUSIC_DB) return textResponse('Music service is not configured', 503);
       if (url.searchParams.get("provider") !== "github" || url.searchParams.get("site_id") !== site.hostname) {
         return textResponse("Invalid provider or site", 400);
       }
       const state = base64url(crypto.getRandomValues(new Uint8Array(32)));
       const verifier = base64url(crypto.getRandomValues(new Uint8Array(32)));
       const challenge = base64url(new Uint8Array(await crypto.subtle.digest("SHA-256", encoder.encode(verifier))));
-      const cookie = await seal({ state, verifier, callbackUrl, expires: Date.now() + MAX_AGE * 1000 }, env.STATE_SECRET);
+      const cookie = await seal({ state, verifier, callbackUrl, purpose, expires: Date.now() + MAX_AGE * 1000 }, env.STATE_SECRET);
       const authorize = new URL("https://github.com/login/oauth/authorize");
       authorize.search = new URLSearchParams({
         client_id: env.GITHUB_CLIENT_ID, redirect_uri: callbackUrl,
-        scope: "public_repo", state, code_challenge: challenge, code_challenge_method: "S256",
+        scope: purpose === 'music' ? '' : "public_repo", state, code_challenge: challenge, code_challenge_method: "S256",
       }).toString();
       return new Response(null, { status: 302, headers: {
         ...commonHeaders(), Location: authorize.href, "Set-Cookie": sessionCookie(cookie, MAX_AGE),
       } });
     }
     let token = "";
+    let purpose = 'github';
     try {
       const cookie = (request.headers.get("Cookie") || "").split(";").map(v => v.trim()).find(v => v.startsWith(`${COOKIE}=`));
       const session = await open(cookie?.slice(COOKIE.length + 1) || "", env.STATE_SECRET);
       if (session.expires <= Date.now() || session.callbackUrl !== callbackUrl || !session.state || session.state !== url.searchParams.get("state")) {
         throw new Error("Invalid OAuth state");
       }
+      purpose = session.purpose === 'music' ? 'airglow-music' : 'github';
       const code = url.searchParams.get("code");
       if (!code || code.length > 1024 || url.searchParams.has("error")) throw new Error("Authorization cancelled");
       const response = await fetch("https://github.com/login/oauth/access_token", {
@@ -127,13 +135,14 @@ export default {
       const userResponse = await fetch("https://api.github.com/user", { headers });
       const user = await userResponse.json();
       if (!userResponse.ok || String(user.id) !== env.ALLOWED_USER_ID) throw new Error("Not the blog owner");
+      if (purpose === 'airglow-music') return popupResponse(site.origin, await issueMusicSession(env, user), true, purpose);
       const repoResponse = await fetch(`https://api.github.com/repos/${env.GITHUB_REPO}`, { headers });
       const repo = await repoResponse.json();
       if (!repoResponse.ok || !repo.permissions?.push) throw new Error("No repository write access");
       return popupResponse(site.origin, { token, provider: "github" }, true);
     } catch {
       if (token) await revokeToken(token, env);
-      return popupResponse(site.origin, { message: "登录失败：仅允许博客所有者管理文章。请使用 Allenxia814 账号重新登录。" });
+      return popupResponse(site.origin, { message: "登录失败：仅允许博客所有者访问。请使用 Allenxia814 账号重新登录。" }, false, purpose);
     }
   },
 };

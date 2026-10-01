@@ -28,7 +28,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
-      - run: node --test services/github-oauth/worker.test.mjs
+      - run: node --test services/github-oauth/*.test.mjs
       - uses: actions/configure-pages@v5
       - run: pnpm build
       - uses: actions/upload-pages-artifact@v3

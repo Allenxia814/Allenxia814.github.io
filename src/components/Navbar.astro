@@ -34,6 +34,7 @@ let links: NavBarLink[] = navBarConfig.links.map(
         <div class="hidden md:flex">
             {links.map((l) => {
                 return <a aria-label={l.name} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null}
+                          data-owner-music={l.ownerOnly || undefined} data-pagefind-ignore={l.ownerOnly || undefined} data-no-swup={l.ownerOnly || undefined} style={l.ownerOnly ? "display:none" : undefined}
                           class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"
                 >
                     <div class="flex items-center">
@@ -62,6 +63,11 @@ let links: NavBarLink[] = navBarConfig.links.map(
 </div>
 
 <script>
+import { updateMusicNavigation } from '../utils/music-client';
+updateMusicNavigation();
+document.addEventListener('astro:page-load', updateMusicNavigation);
+window.addEventListener('airglow-music-session', updateMusicNavigation);
+window.addEventListener('storage', updateMusicNavigation);
 function switchTheme() {
     if (localStorage.theme === 'dark') {
         document.documentElement.classList.remove('dark');
