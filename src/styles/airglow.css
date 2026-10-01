@@ -1,0 +1,67 @@
+/* Airglow: a quiet night journal, layered over Fuwari's theme. */
+html:root {
+  --primary: #12776c;
+  --page-bg: #edf3f6;
+  --card-bg: #ffffff;
+  --radius-large: 1.1rem;
+  --airglow-border: #dce6eb;
+  --airglow-muted: #526571;
+}
+html:root.dark {
+  --primary: #70ddc5;
+  --page-bg: #0d1721;
+  --card-bg: #15232f;
+  --float-panel-bg: #1b2c39;
+  --airglow-border: #273a48;
+  --airglow-muted: #a2b5c1;
+  --btn-content: #70ddc5;
+  --btn-regular-bg: #233a43;
+  --btn-regular-bg-hover: #2c4a52;
+}
+body { color: #243543; font-family: 'Roboto', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+html.dark body { color: #e9f1f7; }
+.card-base { border: 1px solid var(--airglow-border); box-shadow: 0 5px 22px rgb(0 12 25 / 3%); }
+#navbar .card-base { background: var(--card-bg); border-top: 0; }
+#navbar a { font-size: .95rem; }
+#navbar .airglow-brand > div { font-size: 1.35rem; letter-spacing: -.04em; }
+.airglow-banner-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgb(4 15 28 / 50%), transparent 80%); pointer-events: none; }
+.airglow-banner-copy { position: absolute; top: calc(50% + 1.4rem); left: 50%; transform: translate(-50%, -50%); width: min(100%, 75rem); padding: 0 2.3rem; color: #f3fbff; }
+.airglow-kicker { font-size: .75rem; font-weight: 500; letter-spacing: .24em; color: #a3d7d6; margin-bottom: .4rem; }
+.airglow-wordmark { font-size: clamp(2.8rem, 5vw, 4.4rem); line-height: 1.12; font-weight: 700; letter-spacing: -.05em; }
+.airglow-wordmark span { color: #70ddc5; }
+.airglow-tagline { font-size: 1rem; letter-spacing: .08em; margin-top: .8rem; color: #d1e4eb; }
+.airglow-profile { padding: 1.9rem 1.4rem 1.4rem; text-align: center; }
+.profile-avatar { display: inline-block; margin-bottom: 1rem; border-radius: 26px; box-shadow: 0 0 35px rgb(87 218 194 / 9%); }
+.profile-avatar img { border-radius: 26px; }
+.airglow-profile h2 { font-size: 1.45rem; font-weight: 700; letter-spacing: -.035em; margin-bottom: .5rem; }
+.airglow-profile p { font-size: .9rem; line-height: 1.9; color: var(--airglow-muted); }
+.profile-about { display: inline-block; font-size: .9rem; color: var(--primary); margin: .8rem 0 1.3rem; border-bottom: 1px solid var(--airglow-border); padding-bottom: .15rem; }
+.profile-topics { display: flex; justify-content: center; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--airglow-border); color: var(--airglow-muted); font-size: .85rem; }
+.airglow-section-heading { display: flex; justify-content: space-between; align-items: end; margin: 0 0 1rem; gap: 1rem; padding: 1rem 1.4rem; border: 1px solid var(--airglow-border); border-radius: var(--radius-large); background: var(--card-bg); }
+.airglow-section-heading p { font-size: .75rem; letter-spacing: .18em; color: var(--primary); margin-bottom: .25rem; }
+.airglow-section-heading h1 { font-size: 1.5rem; font-weight: 700; }
+.airglow-section-heading > span { color: var(--airglow-muted); font-size: .85rem; }
+.airglow-post { transition: border-color .2s, box-shadow .2s; }
+.airglow-post:hover { border-color: var(--primary); box-shadow: 0 8px 26px rgb(0 12 25 / 8%); }
+.airglow-post a.text-3xl { font-size: 1.45rem; line-height: 1.55; letter-spacing: -.015em; }
+.airglow-post a.text-3xl::before { display: none; }
+.airglow-post .text-black\/30 { color: var(--airglow-muted); }
+.custom-md { font-size: 1rem; line-height: 1.95; }
+.custom-md h2 { margin-top: 2rem; }
+.custom-md p { margin-top: 1rem; margin-bottom: 1rem; }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
+@media (max-width: 767px) {
+  .airglow-banner-copy { padding: 0 1.4rem; }
+  .airglow-tagline { font-size: .9rem; letter-spacing: .03em; }
+  #main-grid { padding-left: .75rem; padding-right: .75rem; }
+  .airglow-section-heading { align-items: start; }
+  .airglow-section-heading > span { max-width: 7rem; text-align: right; }
+  .airglow-post { border: 0; box-shadow: none; }
+  .airglow-post a.text-3xl { font-size: 1.25rem; padding-right: 1rem; }
+  #navbar .card-base { padding-left: .25rem; padding-right: .25rem; }
+  #navbar .airglow-brand { padding-left: .75rem; padding-right: .75rem; }
+  .airglow-profile { padding: 1.4rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

@@ -1,0 +1,40 @@
+---
+import { commentsConfig } from "../config/comments";
+---
+{commentsConfig.categoryId && (
+  <section class="card-base px-6 md:px-9 py-7 mb-4" aria-label="文章评论" data-pagefind-ignore>
+    <h2 class="text-xl font-bold mb-2 text-90">留下你的想法</h2>
+    <p class="text-sm text-50 mb-5">登录 GitHub 后即可参与评论。</p>
+    <div data-giscus data-repo={commentsConfig.repo} data-repo-id={commentsConfig.repoId} data-category={commentsConfig.category} data-category-id={commentsConfig.categoryId}></div>
+  </section>
+)}
+<script>
+  function mountComments() {
+    const host = document.querySelector<HTMLElement>("[data-giscus]");
+    if (!host || host.childElementCount) return;
+    const activePath = location.pathname;
+    const script = document.createElement("script");
+    script.src = "https://giscus.app/client.js";
+    const settings = {
+      repo: host.dataset.repo!, "repo-id": host.dataset.repoId!,
+      category: host.dataset.category!, "category-id": host.dataset.categoryId!,
+      mapping: "specific", term: activePath, strict: "1",
+      "reactions-enabled": "1", "emit-metadata": "0", "input-position": "top",
+      theme: document.documentElement.classList.contains("dark") ? "dark" : "light",
+      lang: "zh-CN", loading: "lazy",
+    };
+    for (const [key, value] of Object.entries(settings)) script.setAttribute(`data-${key}`, value);
+    script.crossOrigin = "anonymous";
+    script.async = true;
+    host.appendChild(script);
+  }
+  function updateCommentTheme() {
+    const frame = document.querySelector<HTMLIFrameElement>("[data-giscus] iframe.giscus-frame");
+    frame?.contentWindow?.postMessage({ giscus: { setConfig: { theme: document.documentElement.classList.contains("dark") ? "dark" : "light" } } }, "https://giscus.app");
+  }
+  new MutationObserver(updateCommentTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  // Swup replaces the main element; mount a fresh thread for each article.
+  document.addEventListener("astro:page-load", mountComments);
+  document.addEventListener("DOMContentLoaded", mountComments);
+  mountComments();
+</script>

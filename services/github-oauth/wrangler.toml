@@ -1,0 +1,11 @@
+name = "airglow-github-auth"
+main = "worker.mjs"
+compatibility_date = "2026-10-02"
+workers_dev = true
+
+[vars]
+ALLOWED_SITE_ORIGIN = "https://allenxia814.github.io"
+ALLOWED_USER_ID = "189645776"
+GITHUB_REPO = "Allenxia814/Allenxia814.github.io"
+
+# Set GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET and STATE_SECRET as Worker secrets.

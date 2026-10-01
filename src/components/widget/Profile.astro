@@ -1,0 +1,13 @@
+---
+import { profileConfig } from "../../config";
+import { url } from "../../utils/url-utils";
+---
+<section class="card-base airglow-profile">
+  <a class="profile-avatar" href={url('/about/')} aria-label="关于 Airglow">
+    <img src={url(profileConfig.avatar || "/favicon/airglow.svg")} width="88" height="88" alt="Airglow 字母 A 标识" />
+  </a>
+  <h2>{profileConfig.name}</h2>
+  <p>{profileConfig.bio}</p>
+  <a class="profile-about" href={url('/about/')}>关于我</a>
+  <div class="profile-topics"><span>技术</span><span>灵感</span><span>日常</span></div>
+</section>
