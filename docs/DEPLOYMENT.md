@@ -24,11 +24,13 @@
 
 ## 3. 仅自己可登录的文章后台
 
+当前验证服务已部署在 https://airglow-github-auth.github-oauth.workers.dev ，`STATE_SECRET` 已在 Cloudflare 中配置。还需要你注册 GitHub OAuth App 并添加 `GITHUB_CLIENT_ID` 和 `GITHUB_CLIENT_SECRET`。
+
 GitHub Pages 运行静态页面；认证端独立运行在 Cloudflare Worker。认证端核对 GitHub 数字用户 ID **189645776** 和仓库写入权限，只向此账号的后台会话返回访问令牌。其他登录用户会被拒绝。
 
 ### 创建 Worker
 
-Cloudflare 控制台 **Workers & Pages → Create → Worker**，命名 `airglow-github-auth`，创建后得到 `https://airglow-github-auth.<你的子域>.workers.dev`。
+Cloudflare 控制台 **Workers & Pages → Create → Worker**，命名 `airglow-github-auth`，创建后得到 `https://airglow-github-auth.github-oauth.workers.dev`。
 
 在 **Edit code** 中使用 `services/github-oauth/worker.mjs` 的代码，保存部署。该文件没有依赖，可直接粘贴到 Worker 编辑器。
 
@@ -51,7 +53,7 @@ Cloudflare 控制台 **Workers & Pages → Create → Worker**，命名 `airglow
 
 - Application name：`Airglow Blog Admin`
 - Homepage URL：`https://allenxia814.github.io`
-- Authorization callback URL：`https://airglow-github-auth.<你的子域>.workers.dev/callback`
+- Authorization callback URL：`https://airglow-github-auth.github-oauth.workers.dev/callback`
 
 注册后，把 Client ID 和新生成的 Client secret 保存到上述 Worker Secrets，并重新部署 Worker。这个 OAuth App 用 `public_repo` 权限让 Decap 提交公开仓库内容。GitHub 授权时会显示这一权限；后台编辑器会在浏览器保存登录会话，退出时使用编辑器的退出登录。
 
@@ -59,7 +61,7 @@ Cloudflare 控制台 **Workers & Pages → Create → Worker**，命名 `airglow
 
 在 GitHub 仓库 **Settings → Secrets and variables → Actions → Variables** 新增：
 
-`PUBLIC_CMS_AUTH_URL` = `https://airglow-github-auth.<你的子域>.workers.dev`
+`PUBLIC_CMS_AUTH_URL` = `https://airglow-github-auth.github-oauth.workers.dev`
 
 重新运行部署，再打开 `/admin/`。完成 OAuth 授权后可以新增、编辑和删除文章；打开“隐藏文章”并保存，待部署完成后文章不再出现在网页、搜索、归档、站点地图或 RSS 中。
 
