@@ -1,0 +1,53 @@
+---
+import type { CollectionEntry } from "astro:content";
+import path from "node:path";
+import ImageWrapper from "./misc/ImageWrapper.astro";
+import { getDir } from "../utils/url-utils";
+interface Props { entry: CollectionEntry<"posts">; feature?: boolean; detail?: boolean; }
+const { entry, feature = false, detail = false } = Astro.props;
+const category = entry.data.category || "随笔";
+const family = /技术|编程|开发|code|tech/i.test(category) ? "tech" : /灵感|设计|创作|design/i.test(category) ? "idea" : "life";
+const symbols = { tech: "{ }", idea: "✧", life: "☾" };
+const index = Array.from(entry.id).reduce((value, char) => (value * 31 + char.codePointAt(0)!) >>> 0, 0);
+const orbit = `orbit-${index}`;
+const hasImage = !!entry.data.image;
+---
+<div class:list={["article-cover", { "feature-cover": feature, "detail-cover": detail, "photo-cover": hasImage }]} data-family={family}>
+  {hasImage && <div class="cover-photo" data-cover-photo><ImageWrapper src={entry.data.image} basePath={path.join("content/posts/", getDir(entry.id))} alt={`${entry.data.title}的封面`} class="cover-image" /></div>}
+  <svg class="cover-orbits" viewBox="0 0 900 500" fill="none" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+    <defs><linearGradient id={orbit} x1="100" y1="430" x2="800" y2="50" gradientUnits="userSpaceOnUse"><stop stop-color="#70ddc5" stop-opacity="0"/><stop offset=".55" stop-color="#70ddc5" stop-opacity=".4"/><stop offset="1" stop-color="#70ddc5" stop-opacity="0"/></linearGradient></defs>
+    <ellipse cx="680" cy="200" rx="270" ry="140" transform="rotate(-35 680 200)" stroke={`url(#${orbit})`} />
+    <ellipse cx="680" cy="200" rx="220" ry="220" stroke="#a5e5d6" stroke-opacity=".12" />
+    <circle cx="680" cy="200" r="170" stroke="#a5e5d6" stroke-opacity=".08" />
+    <path d="M0 460L170 395L310 445L465 370L650 440L790 395L900 445V500H0Z" fill="#060f1b" fill-opacity=".5"/>
+    {[ [90,90], [250,55], [390,130], [555,65], [710,340], [805,100], [335,320], [790,285] ].map(([cx,cy], i) => <circle cx={cx + index % 17} cy={cy} r={i % 3 === 0 ? 2 : 1.2} fill="#d4fff4" opacity={.25 + i % 3 * .15}/>)}
+    <path d="M580 124v12m-6-6h12M764 378v8m-4-4h8" stroke="#9cebd7" opacity=".55"/>
+  </svg>
+  {!hasImage && <span class="cover-symbol" aria-hidden="true">{symbols[family]}</span>}
+  <div class="cover-top" aria-hidden="true"><span>AIRGLOW <span class="cover-star">✦</span></span><span>{entry.data.published.getUTCFullYear()} / JOURNAL</span></div>
+  <div class="cover-bottom"><span class="cover-category">{category}</span>{feature && <p class="cover-title">{entry.data.title}</p>}{!feature && <span class="cover-line" aria-hidden="true"></span>}</div>
+</div>
+<style>
+  .article-cover{position:relative;isolation:isolate;aspect-ratio:16/9;overflow:hidden;color:#ecfff9;background:radial-gradient(ellipse at 75% 35%,#204f54 0%,#122b3b 38%,#081728 78%)}
+  .article-cover[data-family=tech]{background:radial-gradient(ellipse at 80% 30%,#254d68 0%,#132d44 40%,#091724 80%)}
+  .article-cover[data-family=idea]{background:radial-gradient(ellipse at 80% 35%,#315453 0%,#1a3341 42%,#111b2e 80%)}
+  .cover-photo,.cover-orbits{position:absolute;inset:0;width:100%;height:100%;z-index:-2}
+  .cover-photo :global(.cover-image){width:100%;height:100%}
+  .cover-orbits,.cover-top,.cover-bottom,.photo-cover:after{pointer-events:none}
+  .photo-cover:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(4,15,26,.4),rgba(4,15,26,.15) 30%,rgba(4,15,26,.85))}
+  .photo-cover .cover-orbits{z-index:-1;opacity:.5}
+  .cover-top{position:absolute;top:22px;left:24px;right:24px;display:flex;justify-content:space-between;gap:12px;font-size:.58rem;letter-spacing:.13em;color:#c9e7e5}
+  .cover-top>span:first-child{font-weight:700}.cover-star{color:#70ddc5;margin-left:4px}
+  .cover-symbol{position:absolute;right:19%;top:40%;transform:translate(50%,-50%);font-size:clamp(3rem,6vw,5rem);font-weight:300;color:#a2edda;opacity:.65;letter-spacing:.1em}
+  .cover-bottom{position:absolute;left:24px;right:24px;bottom:22px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .cover-category{font-size:.7rem;letter-spacing:.05em;border-left:2px solid #70ddc5;padding-left:10px;overflow-wrap:anywhere}
+  .cover-line{height:1px;width:38px;background:#70ddc5;opacity:.7;flex-shrink:0}
+  .feature-cover{aspect-ratio:2.15/1;min-height:280px}
+  .feature-cover .cover-top{left:32px;right:32px;top:28px;font-size:.65rem}
+  .feature-cover .cover-bottom{left:32px;right:32px;bottom:30px;display:block}
+  .feature-cover .cover-category{font-size:.75rem;color:#a6dfd1}
+  .cover-title{font-size:clamp(1.65rem,3vw,2.5rem);font-weight:700;line-height:1.4;letter-spacing:-.025em;margin-top:14px;max-width:90%;overflow-wrap:anywhere;text-wrap:balance;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .detail-cover{border-radius:14px;margin:8px 0 28px}
+  .detail-cover .cover-top{font-size:.7rem}.detail-cover .cover-symbol{font-size:5rem}
+  @media(max-width:640px){.feature-cover{aspect-ratio:1.35/1;min-height:260px}.feature-cover .cover-top{left:22px;right:22px;top:24px;font-size:.58rem}.feature-cover .cover-bottom{left:22px;right:22px;bottom:25px}.cover-title{font-size:1.7rem;max-width:100%}.detail-cover .cover-symbol{font-size:3.5rem}.detail-cover .cover-top{font-size:.58rem}}
+</style>

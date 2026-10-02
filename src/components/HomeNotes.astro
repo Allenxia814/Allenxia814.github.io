@@ -1,0 +1,22 @@
+---
+import { render } from "astro:content";
+import { getPublishedNotes, getNoteUrl, formatNoteTime } from "../utils/notes-utils";
+import { url } from "../utils/url-utils";
+const entries = await Promise.all((await getPublishedNotes()).slice(0,3).map(async entry => ({ entry, excerpt: (await render(entry)).remarkPluginFrontmatter.excerpt as string })));
+---
+<section class="card-base home-notes" aria-label="最近短记">
+  <header><div><p>MOMENTS</p><h2>最近的微光</h2></div><a href={url('/notes/')}>全部短记 <span aria-hidden="true">↗</span></a></header>
+  {entries.length ? <div class="home-notes-list">{entries.map(({ entry, excerpt }) => <a class="home-note" href={getNoteUrl(entry.id)} data-home-note={entry.id}>
+    <span class="note-dot" aria-hidden="true"></span><div><time datetime={entry.data.published.toISOString()}>{formatNoteTime(entry.data.published)}</time><h3>{entry.data.title}</h3><p>{excerpt || "查看这则短记"}</p></div><span class="note-arrow" aria-hidden="true">↗</span>
+  </a>)}</div> : <div class="home-notes-empty"><span aria-hidden="true">✧</span><p>等待第一则短记，留住下一个灵光一闪。</p><a href={url('/notes/')}>去短记看看 ↗</a></div>}
+</section>
+<style>
+  .home-notes{padding:26px 28px;margin:30px 0 20px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:16px}header p{font-size:.6rem;letter-spacing:.17em;color:var(--primary);margin-bottom:8px}h2{font-size:1.2rem;font-weight:700}header>a{font-size:.72rem;color:var(--primary);white-space:nowrap}
+  .home-notes-list{margin-top:24px}.home-note{display:flex;align-items:start;gap:16px;padding:20px 0;border-top:1px solid var(--line-divider)}
+  .note-dot{width:7px;height:7px;margin-top:7px;background:var(--primary);border-radius:50%;flex-shrink:0;box-shadow:0 0 0 4px var(--btn-regular-bg)}
+  .home-note>div{min-width:0;flex:1}.home-note time{font-size:.66rem;color:var(--airglow-muted)}h3{font-size:.93rem;font-weight:700;line-height:1.6;margin-top:8px;overflow-wrap:anywhere}.home-note p{font-size:.78rem;color:var(--airglow-muted);line-height:1.8;margin-top:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+  .note-arrow{color:var(--primary);font-size:.9rem}.home-note:hover h3{color:var(--primary)}
+  .home-notes-empty{margin-top:22px;padding-top:20px;border-top:1px solid var(--line-divider);display:flex;align-items:center;gap:14px;flex-wrap:wrap}.home-notes-empty>span{font-size:1.7rem;color:var(--primary)}.home-notes-empty p{font-size:.8rem;color:var(--airglow-muted);flex:1;min-width:150px;line-height:1.9}.home-notes-empty a{font-size:.72rem;color:var(--primary)}
+  @media(max-width:640px){.home-notes{padding:24px 22px}h2{font-size:1.15rem}}
+</style>

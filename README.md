@@ -46,6 +46,8 @@ pnpm new-post my-first-post
 
 短记页面 `/notes/` 用时间线记录碎片想法，可在后台 **短记 → 新建短记** 中发布文字、标签与多张配图，支持修改、删除和隐藏。每条有独立链接，支持搜索、自动分页和独立 RSS。使用说明见 [docs/NOTES.md](docs/NOTES.md)。
 
+首页采用星夜杂志布局：大幅精选文章、统一封面卡片与最近三条短记。后台文章的「首页精选」开关可指定展示内容；无封面时自动显示星夜图案。文章和短记图片支持分组灯箱、缩放与键盘切换。使用说明见 [docs/DESIGN.md](docs/DESIGN.md)。
+
 GitHub Actions Variables：`PUBLIC_CMS_AUTH_URL`、`PUBLIC_GISCUS_CATEGORY_ID`。这些是公开配置；未配置时后台显示设置提示，评论暂不显示。OAuth 密钥只存放在 Cloudflare Worker Secrets。
 
 已迁移至 Astro 7 与新内容集合 API，并升级 Svelte 和构建依赖。认证逻辑可用 `node --test services/github-oauth/worker.test.mjs` 检查。

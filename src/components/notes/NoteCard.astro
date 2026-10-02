@@ -9,7 +9,7 @@ const { entry, detail = false } = Astro.props;
 const { Content } = await render(entry);
 const permalink = getNoteUrl(entry.id);
 ---
-<article class="card-base note-card" aria-label={entry.data.title} data-note-id={entry.id}>
+<article class="card-base note-card" aria-label={entry.data.title} data-note-id={entry.id} data-airglow-gallery>
   <header class="note-meta">
     <img src="/favicon/airglow.svg" alt="" width="36" height="36" class="note-avatar" />
     <div class="note-byline"><span>{profileConfig.name}</span><a href={permalink} aria-label={`查看短记：${entry.data.title}`}><time datetime={entry.data.published.toISOString()}>{formatNoteTime(entry.data.published)}</time></a></div>
@@ -19,7 +19,7 @@ const permalink = getNoteUrl(entry.id);
   <Markdown class="note-body" index={detail}><Content /></Markdown>
   {entry.data.images.length > 0 && <div class:list={["note-images", { "single-image": entry.data.images.length === 1 }]}>
     {entry.data.images.map(({ image, alt }) => <figure>
-      <a href={image} target="_blank" rel="noopener noreferrer" aria-label={alt ? `查看原图：${alt}` : "查看原图（新窗口）"}>
+      <a href={image} target="_blank" rel="noopener noreferrer" data-no-swup aria-label={alt ? `放大图片：${alt}` : "放大图片"}>
         <img src={image} alt={alt} loading="lazy" decoding="async" />
       </a>
       {alt && <figcaption>{alt}</figcaption>}

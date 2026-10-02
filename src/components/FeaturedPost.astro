@@ -1,0 +1,23 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import ArticleCover from "./ArticleCover.astro";
+import { getPostUrlBySlug } from "../utils/url-utils";
+import { formatDateToYYYYMMDD } from "../utils/date-utils";
+interface Props { entry: CollectionEntry<"posts">; }
+const { entry } = Astro.props;
+const { remarkPluginFrontmatter } = await render(entry);
+const href = getPostUrlBySlug(entry.id);
+---
+<section class="card-base featured-story" aria-label="首页精选" data-featured-id={entry.id}>
+  <header><span><span aria-hidden="true">✦</span> 精选阅读</span><span>FEATURED STORY</span></header>
+  <a href={href} class="featured-image-link" aria-label={`阅读精选：${entry.data.title}`}><h2 class="sr-only">{entry.data.title}</h2><ArticleCover entry={entry} feature /></a>
+  <div class="featured-copy"><p>{entry.data.description || remarkPluginFrontmatter.excerpt}</p><footer><span><time datetime={entry.data.published.toISOString()}>{formatDateToYYYYMMDD(entry.data.published)}</time><span class="meta-dot">·</span>{remarkPluginFrontmatter.minutes} 分钟阅读</span><a href={href}>走进这篇记录 <span aria-hidden="true">↗</span></a></footer></div>
+</section>
+<style>
+  .featured-story{margin-bottom:30px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 28px;font-size:.72rem}header>span:first-child{color:var(--primary);font-weight:700}header>span:first-child>span{margin-right:8px}header>span:last-child{font-size:.58rem;letter-spacing:.16em;color:var(--airglow-muted)}
+  .featured-image-link{display:block;overflow:hidden}.featured-image-link :global(.article-cover){transition:filter .25s}.featured-image-link:hover :global(.article-cover){filter:brightness(1.08)}
+  .featured-copy{padding:22px 28px}.featured-copy>p{font-size:.86rem;line-height:1.9;color:var(--airglow-muted);overflow-wrap:anywhere}
+  footer{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:20px;padding-top:17px;border-top:1px solid var(--line-divider);font-size:.72rem;flex-wrap:wrap}footer>span{color:var(--airglow-muted)}.meta-dot{margin:0 10px}footer a{color:var(--primary);font-weight:700}
+  @media(max-width:640px){header{padding:17px 22px}.featured-copy{padding:20px 22px}footer{font-size:.68rem;gap:12px}}
+</style>

@@ -1,0 +1,87 @@
+<script>
+  import PhotoSwipeLightbox from "photoswipe/lightbox";
+  import "photoswipe/style.css";
+
+  let lightbox: PhotoSwipeLightbox | undefined;
+  const observed = new WeakSet<HTMLImageElement>();
+
+  function prepareImages() {
+    document.querySelectorAll<HTMLImageElement>("[data-airglow-gallery] .custom-md img, [data-airglow-gallery] [data-cover-photo] img, [data-airglow-gallery] .note-images img").forEach(image => {
+      const source = image.currentSrc || image.src;
+      let anchor = image.closest("a");
+      // Preserve images that link to another page rather than the original image.
+      if (anchor && anchor.href !== image.src && anchor.href !== source) return;
+      if (!anchor) {
+        anchor = document.createElement("a");
+        image.before(anchor);
+        anchor.append(image);
+      }
+      anchor.href = source;
+      anchor.target = "_blank";
+      anchor.rel = "noopener noreferrer";
+      anchor.setAttribute("data-no-swup", "");
+      anchor.classList.add("airglow-image-link");
+      const caption = image.alt || image.closest("figure")?.querySelector("figcaption")?.textContent || "";
+      anchor.setAttribute("aria-label", caption ? `放大图片：${caption}` : "放大图片");
+      anchor.dataset.lightboxCaption = caption;
+      const sync = () => {
+        if (!image.naturalWidth || !image.naturalHeight) return;
+        anchor!.dataset.pswpWidth = String(image.naturalWidth);
+        anchor!.dataset.pswpHeight = String(image.naturalHeight);
+        anchor!.dataset.pswpSrc = image.currentSrc || image.src;
+        anchor!.classList.add("airglow-lightbox-link");
+      };
+      sync();
+      if (!observed.has(image)) {
+        observed.add(image);
+        image.addEventListener("load", sync);
+      }
+    });
+  }
+
+  function initLightbox() {
+    lightbox?.destroy();
+    prepareImages();
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    lightbox = new PhotoSwipeLightbox({
+      gallery: "[data-airglow-gallery]",
+      children: "a.airglow-lightbox-link",
+      pswpModule: () => import("photoswipe"),
+      bgOpacity: .94,
+      loop: false,
+      padding: { top: 64, bottom: 70, left: 16, right: 16 },
+      showAnimationDuration: reduced ? 0 : 250,
+      hideAnimationDuration: reduced ? 0 : 200,
+      zoomAnimationDuration: reduced ? 0 : 250,
+      imageClickAction: "zoom",
+      tapAction: "toggle-controls",
+      doubleTapAction: "zoom",
+      closeTitle: "关闭（Esc）",
+      zoomTitle: "放大 / 缩小",
+      arrowPrevTitle: "上一张",
+      arrowNextTitle: "下一张",
+      indexIndicatorSep: " / ",
+      errorMsg: "图片暂时无法加载，请关闭后查看原图。",
+    });
+    lightbox.on("uiRegister", () => {
+      lightbox!.pswp!.ui!.registerElement({
+        name: "airglow-caption", order: 9, isButton: false, appendTo: "root",
+        onInit: (element, pswp) => {
+          const update = () => {
+            const caption = (pswp.currSlide?.data.element as HTMLElement | undefined)?.dataset.lightboxCaption || "";
+            element.textContent = caption;
+            element.hidden = !caption;
+          };
+          pswp.on("change", update);
+          update();
+        },
+      });
+    });
+    lightbox.init();
+  }
+  initLightbox();
+  document.addEventListener("astro:page-load", initLightbox);
+  const setupNavigation = () => window.swup.hooks.on("content:replace", () => lightbox?.destroy(), { before: true });
+  if (window.swup?.hooks) setupNavigation();
+  else document.addEventListener("swup:enable", setupNavigation, { once: true });
+</script>

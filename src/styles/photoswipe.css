@@ -10,3 +10,35 @@
 .pswp__button--close {
     @apply mr-4 !important;
 }
+
+.pswp__bg { background: #061019; }
+.pswp__button { color: #edfdf9; }
+.pswp__counter { color: #b6e4d8; text-shadow: none; }
+.pswp__button--arrow:disabled { visibility: hidden; }
+.pswp__airglow-caption {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: min(720px, calc(100% - 40px));
+    padding: 10px 18px;
+    border: 1px solid rgb(112 221 197 / 20%);
+    border-radius: 12px;
+    color: #e3f4ed;
+    background: rgb(13 30 39 / 85%);
+    font-size: .8rem;
+    line-height: 1.7;
+    text-align: center;
+    overflow-wrap: anywhere;
+    pointer-events: none;
+}
+.pswp__airglow-caption[hidden] { display: none; }
+.airglow-image-link { display: block; cursor: zoom-in; }
+[data-cover-photo] .airglow-image-link { width: 100%; height: 100%; }
+.custom-md a.airglow-image-link { border: 0; background: none; padding: 0; }
+.note-images a.airglow-image-link { cursor: zoom-in; }
+
+@media (max-width: 640px) {
+    .pswp__airglow-caption { font-size: .72rem; bottom: 16px; }
+}
