@@ -1,6 +1,14 @@
 # Airglow 星夜杂志
 
-首页：https://allenxia814.github.io/
+起始页：https://allenxia814.github.io/
+
+文章首页：https://allenxia814.github.io/blog/
+
+## 起始页
+
+打开根网址会先展示星夜欢迎页，点击「进入博客」进入 `/blog/`。导航栏「主页」返回文章首页，点击 Airglow 标识返回起始页。文章分页使用 `/blog/2/` 等地址，文章、短记、友链、后台与 RSS 的原有地址不变。
+
+起始页复用现有夜空素材，展示最新公开文章入口，不读取私人音乐数据。所有入口均为普通链接，无需 JavaScript；星轨动画尊重系统减少动态效果设置。
 
 ## 精选文章
 

@@ -25,7 +25,7 @@ let links: NavBarLink[] = navBarConfig.links.map(
     <div class:list={[
         className,
         "card-base !overflow-visible max-w-[var(--page-width)] h-[4.5rem] !rounded-t-none mx-auto flex items-center justify-between px-4"]}>
-        <a href={url('/')} class="airglow-brand btn-plain scale-animation rounded-lg h-[3.25rem] px-3 lg:px-5 font-bold active:scale-95">
+        <a href={url('/')} data-no-swup aria-label="Airglow 起始页" class="airglow-brand btn-plain scale-animation rounded-lg h-[3.25rem] px-3 lg:px-5 font-bold active:scale-95">
             <div class="flex flex-row text-[var(--primary)] items-center text-md">
                 <img src={url("/favicon/airglow.svg")} width="30" height="30" alt="" class="mr-2" />
                 {siteConfig.title}

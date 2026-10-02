@@ -15,7 +15,7 @@ let initialized = false;
 
 const fakeResult: SearchResult[] = [
 	{
-		url: url("/"),
+		url: url("/blog/"),
 		meta: {
 			title: "This Is a Fake Search Result",
 		},
@@ -23,7 +23,7 @@ const fakeResult: SearchResult[] = [
 			"Because the search cannot work in the <mark>dev</mark> environment.",
 	},
 	{
-		url: url("/"),
+		url: url("/blog/"),
 		meta: {
 			title: "If You Want to Test the Search",
 		},

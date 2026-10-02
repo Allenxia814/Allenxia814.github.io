@@ -1,0 +1,117 @@
+---
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/700.css";
+import { siteConfig } from "../config";
+import { getSortedPosts } from "../utils/content-utils";
+import { getPostUrlBySlug, url } from "../utils/url-utils";
+
+const latest = (await getSortedPosts()).find(post => !post.data.draft);
+const site = Astro.site || new URL("https://allenxia814.github.io/");
+const title = `${siteConfig.title} — 在这里，收集一点微光`;
+const cover = new URL(url("/images/airglow-night.webp"), site);
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={siteConfig.subtitle} />
+    <meta name="author" content="Airglow" />
+    <meta name="theme-color" content="#0a1420" />
+    <title>{title}</title>
+    <link rel="icon" href={url("/favicon/airglow.svg")} type="image/svg+xml" />
+    <link rel="canonical" href={new URL(url("/"), site)} />
+    <link rel="alternate" type="application/rss+xml" title="Airglow 文章" href={url("/rss.xml")} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Airglow" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={siteConfig.subtitle} />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:image" content={cover} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={siteConfig.subtitle} />
+    <meta name="twitter:image" content={cover} />
+  </head>
+  <body>
+    <a class="skip-link" href="#welcome">跳到欢迎内容</a>
+    <img class="night" src={url("/images/airglow-night.webp")} alt="" width="1920" height="1080" fetchpriority="high" />
+    <div class="shade" aria-hidden="true"></div>
+    <div class="welcome-shell">
+      <header>
+        <a class="brand" href={url("/")} data-no-swup aria-label="Airglow 起始页"><img src={url("/favicon/airglow.svg")} width="32" height="32" alt="" /><span>Airglow</span></a>
+        <nav aria-label="快捷入口">
+          <a href={url("/blog/")} data-no-swup>文章</a>
+          <a href={url("/notes/")} data-no-swup>短记</a>
+          <a href={url("/about/")} data-no-swup>关于</a>
+        </nav>
+      </header>
+      <main id="welcome" tabindex="-1">
+        <div class="intro">
+          <p class="eyebrow"><span></span>A PERSONAL JOURNAL</p>
+          <h1>Airglow<span>.</span></h1>
+          <p class="headline">在这里，收集一点微光。</p>
+          <p class="description">记录技术、灵感与日常。<br />给一闪而过的想法，留一处慢慢生长的地方。</p>
+          <div class="actions">
+            <a class="enter" href={url("/blog/")} data-no-swup>进入博客 <span aria-hidden="true">↗</span></a>
+            <a class="about" href={url("/about/")} data-no-swup>认识 Airglow <span aria-hidden="true">→</span></a>
+          </div>
+          {latest && <a class="latest" href={getPostUrlBySlug(latest.id)} data-no-swup>
+            <span class="latest-label">最近写下</span><span class="latest-title">{latest.data.title}</span><span class="latest-arrow" aria-hidden="true">↗</span>
+          </a>}
+        </div>
+        <div class="celestial" aria-hidden="true">
+          <div class="orb-glow"></div>
+          <svg class="orbits" viewBox="0 0 500 500" fill="none">
+            <defs><linearGradient id="welcome-orbit" x1="70" y1="400" x2="430" y2="100" gradientUnits="userSpaceOnUse"><stop stop-color="#70ddc5" stop-opacity="0" /><stop offset=".5" stop-color="#70ddc5" stop-opacity=".65" /><stop offset="1" stop-color="#70ddc5" stop-opacity="0" /></linearGradient></defs>
+            <circle cx="250" cy="250" r="160" stroke="#9bded6" stroke-opacity=".14" />
+            <circle cx="250" cy="250" r="209" stroke="#9bded6" stroke-opacity=".07" />
+            <ellipse class="orbit" cx="250" cy="250" rx="232" ry="110" stroke="url(#welcome-orbit)" />
+            <ellipse cx="250" cy="250" rx="232" ry="110" transform="rotate(-65 250 250)" stroke="#9bded6" stroke-opacity=".09" />
+            <circle cx="360" cy="134" r="4" fill="#baffeb" />
+            <circle cx="93" cy="281" r="2" fill="#baffeb" opacity=".7" />
+            <path d="M411 327v16m-8-8h16M118 109v10m-5-5h10" stroke="#a0ebd7" stroke-width="1.2" />
+          </svg>
+          <div class="orb-mark"><img src={url("/favicon/airglow.svg")} width="120" height="120" alt="" /></div>
+          <span class="orb-caption">THOUGHTS, IN THEIR OWN LIGHT.</span>
+        </div>
+      </main>
+      <footer><p>技术 <span>·</span> 灵感 <span>·</span> 日常</p><p>慢慢写，慢慢亮。<span class="copyright">© {new Date().getFullYear()} Airglow</span></p></footer>
+    </div>
+    <div id="toc" hidden></div>
+  </body>
+</html>
+<style>
+  :global(html){background:#0a1420;color-scheme:dark}
+  :global(body){margin:0;background:#0a1420;color:#edf8fb;font-family:'Roboto','PingFang SC','Microsoft YaHei',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:clip}
+  :global(body *){box-sizing:border-box}
+  p,h1{margin:0}a{color:inherit;text-decoration:none}a:focus-visible{outline:2px solid #70ddc5;outline-offset:6px;border-radius:6px}
+  .night,.shade{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+  .night{object-fit:cover;object-position:60% center;opacity:.66}
+  .shade{background:linear-gradient(90deg,rgba(6,16,28,.85),rgba(6,16,28,.44) 60%,rgba(6,16,28,.32)),linear-gradient(0deg,#0a1420,transparent 65%)}
+  .welcome-shell{position:relative;max-width:1280px;min-height:100svh;margin:0 auto;padding:0 64px;display:flex;flex-direction:column;overflow:clip}
+  header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:32px 0}
+  .brand{display:flex;align-items:center;gap:10px;color:#a7e7d8;font-size:1.12rem;font-weight:700;letter-spacing:-.035em}.brand img{border-radius:9px}
+  nav{display:flex;gap:32px}nav a{font-size:.82rem;color:#b5cbd2;padding:8px 2px;transition:color .2s}nav a:hover,.about:hover{color:#9cecd6}
+  main{display:grid;grid-template-columns:1.12fr 1fr;align-items:center;gap:24px;flex:1;padding:68px 0 80px;outline:none}
+  .intro{position:relative;z-index:1;min-width:0}
+  .eyebrow{display:flex;align-items:center;gap:12px;color:#a8cecb;letter-spacing:.26em;font-size:.64rem}.eyebrow>span{width:6px;height:6px;border-radius:50%;background:#70ddc5;box-shadow:0 0 14px #70ddc577}
+  h1{font-size:clamp(5rem,10.8vw,8.5rem);line-height:1.15;letter-spacing:-.07em;margin:19px 0 20px;font-weight:700}h1>span{color:#70ddc5}
+  .headline{font-size:clamp(1.25rem,2.2vw,1.85rem);font-weight:400;letter-spacing:.06em;line-height:1.7}
+  .description{font-size:.9rem;line-height:2;color:#afc5ce;margin-top:22px}
+  .actions{display:flex;align-items:center;gap:28px;margin-top:38px;flex-wrap:wrap}
+  .enter{display:flex;align-items:center;justify-content:space-between;gap:36px;background:#8ae4cd;color:#10252b;border:1px solid #b6f6e2;border-radius:12px;padding:16px 22px;font-size:.92rem;font-weight:700;box-shadow:0 6px 30px #65d9be12;transition:background .2s,transform .2s}
+  .enter:hover{background:#b4f4e1;transform:translateY(-2px)}.enter>span{font-size:1.2rem}.about{font-size:.82rem;color:#c0d6dd;transition:color .2s}.about>span{margin-left:9px}
+  .latest{display:flex;align-items:center;gap:15px;max-width:440px;margin-top:48px;padding-top:22px;border-top:1px solid #a5d6d123;font-size:.76rem;line-height:1.8}
+  .latest-label{color:#9bb7c0;font-size:.65rem;white-space:nowrap}.latest-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#d9e8ec;transition:color .2s}.latest-arrow{color:#8cdec9;margin-left:auto}.latest:hover .latest-title{color:#8ae4cd}
+  .celestial{position:relative;width:100%;max-width:480px;aspect-ratio:1;justify-self:end;pointer-events:none}
+  .orbits{position:absolute;inset:0;width:100%;height:100%}.orb-glow{position:absolute;inset:15%;border-radius:50%;background:radial-gradient(circle,#70ddc515,transparent 68%);box-shadow:0 0 100px #70ddc509}
+  .orbit{transform-origin:250px 250px;animation:orbit 55s linear infinite}.orb-mark{position:absolute;inset:0;display:grid;place-items:center}.orb-mark img{border-radius:32px;box-shadow:0 0 70px #63daba12;opacity:.94}.orb-caption{position:absolute;bottom:6%;width:100%;text-align:center;font-size:.55rem;letter-spacing:.24em;color:#95b3b8}
+  footer{border-top:1px solid #a5d6d11c;padding:24px 0;display:flex;justify-content:space-between;gap:18px;color:#93aeb7;font-size:.65rem;letter-spacing:.1em;line-height:1.9}footer>p>span{margin:0 10px;color:#6c9296}.copyright{display:inline-block;margin-left:24px!important;letter-spacing:0;font-size:.6rem}
+  .skip-link{position:fixed;top:12px;left:16px;padding:12px 18px;background:#8ae4cd;color:#10252b;z-index:5;transform:translateY(-160%)}.skip-link:focus{transform:translateY(0)}
+  @keyframes orbit{from{transform:rotate(-25deg)}to{transform:rotate(335deg)}}
+  @media(max-width:900px){.welcome-shell{padding:0 36px}main{grid-template-columns:1.4fr 1fr;gap:0}h1{font-size:6rem}.orb-mark img{width:90px;height:90px;border-radius:25px}.orb-caption{display:none}}
+  @media(min-width:641px) and (max-height:800px){header{padding:24px 0}main{padding:28px 0 34px}h1{font-size:clamp(4.5rem,9vw,7rem)}.description{margin-top:18px}.actions{margin-top:30px}.latest{margin-top:34px}}
+  @media(max-width:640px){.welcome-shell{padding:0 26px}header{padding:24px 0}nav{gap:21px}nav a{font-size:.75rem}.brand{font-size:1.05rem}main{display:block;position:relative;padding:65px 0 55px;align-content:center}h1{font-size:clamp(4.5rem,19vw,6rem);margin:21px 0 18px}.headline{font-size:1.2rem;letter-spacing:.025em}.description{font-size:.82rem;margin-top:18px}.eyebrow{font-size:.58rem;letter-spacing:.2em}.actions{gap:22px;margin-top:31px}.enter{padding:15px 20px;font-size:.86rem;gap:31px}.about{font-size:.76rem}.latest{margin-top:38px;gap:12px}.celestial{position:absolute;right:-146px;top:34px;width:300px;opacity:.25}.orb-mark img{visibility:hidden}footer{font-size:.6rem;align-items:start;padding:22px 0}footer>p:last-child{text-align:right}.copyright{display:block;margin:4px 0 0!important}footer>p>span{margin:0 6px}}
+  @media(prefers-reduced-motion:reduce){.orbit{animation:none}a{transition:none!important}.enter:hover{transform:none}}
+</style>

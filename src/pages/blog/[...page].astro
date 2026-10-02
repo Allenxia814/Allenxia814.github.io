@@ -1,12 +1,12 @@
 ---
 import type { GetStaticPaths } from "astro";
-import Pagination from "../components/control/Pagination.astro";
-import PostPage from "../components/PostPage.astro";
-import FeaturedPost from "../components/FeaturedPost.astro";
-import HomeNotes from "../components/HomeNotes.astro";
-import { PAGE_SIZE } from "../constants/constants";
-import MainGridLayout from "../layouts/MainGridLayout.astro";
-import { getSortedPosts } from "../utils/content-utils";
+import Pagination from "../../components/control/Pagination.astro";
+import PostPage from "../../components/PostPage.astro";
+import FeaturedPost from "../../components/FeaturedPost.astro";
+import HomeNotes from "../../components/HomeNotes.astro";
+import { PAGE_SIZE } from "../../constants/constants";
+import MainGridLayout from "../../layouts/MainGridLayout.astro";
+import { getSortedPosts } from "../../utils/content-utils";
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const allBlogPosts = await getSortedPosts();
@@ -17,7 +17,7 @@ export const getStaticPaths = (async ({ paginate }) => {
 			params: { page: undefined },
 			props: { featured, totalPosts: allBlogPosts.length, page: {
 				data: [], start: 0, end: 0, size: PAGE_SIZE, total: 0,
-				currentPage: 1, lastPage: 1, url: { current: "/", prev: undefined, next: undefined, first: undefined, last: undefined },
+				currentPage: 1, lastPage: 1, url: { current: "/blog/", prev: undefined, next: undefined, first: undefined, last: undefined },
 			} },
 		}];
 	}
@@ -39,7 +39,7 @@ const len = page.data.length;
     </div>
     <PostPage page={page}></PostPage>}
     {totalPosts === 0 && <div class="card-base px-9 py-12 text-center text-50">暂时还没有公开文章，新的微光正在酝酿。</div>}
-    {page.lastPage > 1 && <Pagination class="mx-auto onload-animation" page={page} style={`animation-delay: calc(var(--content-delay) + ${(len)*50}ms)`} />}
+    {page.lastPage > 1 && <Pagination basePath="/blog/" class="mx-auto onload-animation" page={page} style={`animation-delay: calc(var(--content-delay) + ${(len)*50}ms)`} />}
     {page.currentPage === 1 && <HomeNotes />}
 </MainGridLayout>
 <style>.journal-heading{background:transparent;border:0;padding:0 4px;margin:0 0 18px}.journal-heading h2{font-size:1.25rem;font-weight:700}.journal-heading>span{font-size:.72rem}.journal-heading p{font-size:.6rem}</style>
