@@ -1,0 +1,56 @@
+---
+import type { CollectionEntry } from "astro:content";
+import MainGridLayout from "../../layouts/MainGridLayout.astro";
+import NoteCard from "../../components/notes/NoteCard.astro";
+import { getPublishedNotes } from "../../utils/notes-utils";
+import { url } from "../../utils/url-utils";
+
+export async function getStaticPaths() {
+  const notes = await getPublishedNotes();
+  const size = 10;
+  const totalPages = Math.max(1, Math.ceil(notes.length / size));
+  return Array.from({ length: totalPages }, (_, index) => ({
+    params: { page: index === 0 ? undefined : String(index + 1) },
+    props: { entries: notes.slice(index * size, (index + 1) * size), currentPage: index + 1, totalPages, total: notes.length },
+  }));
+}
+interface Props { entries: CollectionEntry<"notes">[]; currentPage: number; totalPages: number; total: number; }
+const { entries, currentPage, totalPages, total } = Astro.props;
+const pageUrl = (page: number) => url(page === 1 ? "/notes/" : `/notes/${page}/`);
+---
+<MainGridLayout title={currentPage === 1 ? "短记" : `短记 · 第 ${currentPage} 页`} description="Airglow 的碎片想法、日常记录与偶然发现。">
+  <link slot="head" rel="alternate" type="application/rss+xml" title="Airglow 短记" href={url('/notes/rss.xml')} />
+  <section class="card-base notes-heading">
+    <p class="eyebrow">AIRGLOW / MOMENTS</p>
+    <div class="heading-row"><h1>把此刻留下<span>。</span></h1><span class="notes-count">{total} 则短记</span></div>
+    <p class="introduction">一点想法，一段日常，一次偶然的发现。<br />让细小的微光，也有被记录的位置。</p>
+    <footer><span>短记 · 北京时间</span><a href={url('/notes/rss.xml')} data-no-swup>RSS 订阅 <span aria-hidden="true">↗</span></a></footer>
+  </section>
+  {entries.length ? <div class="notes-stream">{entries.map(entry => <NoteCard entry={entry} />)}</div> : <section class="card-base notes-empty">
+    <span class="empty-star" aria-hidden="true">✧</span><h2>等待第一个此刻</h2><p>这里还没有短记。<br />下一次灵光一闪，就把它留在这里。</p>
+  </section>}
+  {totalPages > 1 && <nav class="card-base notes-pagination" aria-label="短记分页">
+    {currentPage > 1 ? <a href={pageUrl(currentPage - 1)}>← 更新的短记</a> : <span></span>}
+    <span>第 {currentPage} / {totalPages} 页</span>
+    {currentPage < totalPages ? <a href={pageUrl(currentPage + 1)}>更早的短记 →</a> : <span></span>}
+  </nav>}
+</MainGridLayout>
+<style>
+  .notes-heading{padding:36px 32px 24px;margin-bottom:16px}
+  .eyebrow{color:var(--primary);font-size:.68rem;font-weight:700;letter-spacing:.18em;margin-bottom:14px}
+  .heading-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  h1{font-size:2rem;font-weight:700;letter-spacing:-.03em;line-height:1.4}h1 span{color:var(--primary)}
+  .notes-count{font-size:.72rem;opacity:.5;white-space:nowrap}
+  .introduction{font-size:.86rem;line-height:1.9;opacity:.6;margin-top:16px}
+  .notes-heading footer{display:flex;justify-content:space-between;gap:16px;margin-top:28px;padding-top:18px;border-top:1px solid var(--line-divider);font-size:.7rem;opacity:.6}
+  .notes-heading footer a{color:var(--primary)}
+  .notes-stream{display:flex;flex-direction:column;gap:16px}
+  .notes-empty{padding:38px 22px 46px;text-align:center;background:radial-gradient(ellipse at center,color-mix(in srgb,var(--primary) 7%,var(--card-bg)),var(--card-bg) 70%)}
+  .empty-star{display:block;color:var(--primary);font-size:3.4rem;opacity:.75;margin-bottom:14px}
+  h2{font-size:1.1rem;font-weight:700;margin-bottom:12px}
+  .notes-empty p{font-size:.85rem;opacity:.5;line-height:1.9}
+  .notes-pagination{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;padding:22px;margin-top:16px;font-size:.75rem;align-items:center}
+  .notes-pagination>span{opacity:.5}.notes-pagination a{color:var(--primary)}.notes-pagination>:last-child{text-align:right}
+  a:focus-visible{outline:2px solid var(--primary);outline-offset:4px}
+  @media(max-width:640px){.notes-heading{padding:28px 22px 22px}h1{font-size:1.7rem}.notes-pagination{padding:20px 16px;font-size:.68rem;gap:8px}}
+</style>

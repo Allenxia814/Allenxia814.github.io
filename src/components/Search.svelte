@@ -144,9 +144,9 @@ $: if (initialized) {
       dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
 ">
     <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
-    <input aria-label="搜索文章" placeholder="{i18n(I18nKey.search)}" bind:value={keywordDesktop} on:focus={() => search(keywordDesktop, true)}
+    <input aria-label="搜索文章与短记" placeholder="{i18n(I18nKey.search)}" bind:value={keywordDesktop} on:focus={() => search(keywordDesktop, true)}
            class="transition-all pl-10 text-sm bg-transparent outline-0
-         h-full w-40 active:w-60 focus:w-60 text-black/50 dark:text-white/50"
+         h-full w-32 focus:w-40 xl:w-40 xl:focus:w-60 text-black/50 dark:text-white/50"
     >
 </div>
 
@@ -166,7 +166,7 @@ top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
       dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
   ">
         <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
-        <input aria-label="搜索文章" placeholder="搜索文章" bind:value={keywordMobile}
+        <input aria-label="搜索文章与短记" placeholder="搜索文章与短记" bind:value={keywordMobile}
                class="pl-10 absolute inset-0 text-sm bg-transparent outline-0
                focus:w-60 text-black/50 dark:text-white/50"
         >
@@ -174,7 +174,7 @@ top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
 
     <!-- search results -->
     {#if (keywordDesktop || keywordMobile) && !isSearching && result.length === 0}
-        <p class="p-4 text-sm text-50" role="status">没有找到相关文章，试试其他关键词。</p>
+        <p class="p-4 text-sm text-50" role="status">没有找到相关内容，试试其他关键词。</p>
     {/if}
     {#each result as item}
         <a href={item.url}

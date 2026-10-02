@@ -1,0 +1,63 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import Markdown from "../misc/Markdown.astro";
+import { formatNoteTime, getNoteUrl } from "../../utils/notes-utils";
+import { profileConfig } from "../../config";
+
+interface Props { entry: CollectionEntry<"notes">; detail?: boolean; }
+const { entry, detail = false } = Astro.props;
+const { Content } = await render(entry);
+const permalink = getNoteUrl(entry.id);
+---
+<article class="card-base note-card" aria-label={entry.data.title} data-note-id={entry.id}>
+  <header class="note-meta">
+    <img src="/favicon/airglow.svg" alt="" width="36" height="36" class="note-avatar" />
+    <div class="note-byline"><span>{profileConfig.name}</span><a href={permalink} aria-label={`查看短记：${entry.data.title}`}><time datetime={entry.data.published.toISOString()}>{formatNoteTime(entry.data.published)}</time></a></div>
+    <span class="note-mark" aria-hidden="true">✦</span>
+  </header>
+  {detail ? <h1 data-pagefind-body data-pagefind-meta="title">{entry.data.title}</h1> : <h2><a href={permalink}>{entry.data.title}</a></h2>}
+  <Markdown class="note-body" index={detail}><Content /></Markdown>
+  {entry.data.images.length > 0 && <div class:list={["note-images", { "single-image": entry.data.images.length === 1 }]}>
+    {entry.data.images.map(({ image, alt }) => <figure>
+      <a href={image} target="_blank" rel="noopener noreferrer" aria-label={alt ? `查看原图：${alt}` : "查看原图（新窗口）"}>
+        <img src={image} alt={alt} loading="lazy" decoding="async" />
+      </a>
+      {alt && <figcaption>{alt}</figcaption>}
+    </figure>)}
+  </div>}
+  <footer class="note-footer">
+    <div class="note-tags" data-pagefind-body={detail || undefined}>{entry.data.tags.map(tag => <span>#{tag}</span>)}</div>
+    {!detail && <a class="note-permalink" href={permalink}>查看短记 <span aria-hidden="true">↗</span></a>}
+  </footer>
+</article>
+<style>
+  .note-card{padding:28px 32px;color:inherit;position:relative}
+  .note-meta{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+  .note-avatar{background:var(--btn-regular-bg);padding:7px;border-radius:12px}
+  .note-byline{display:flex;flex-direction:column;gap:4px;line-height:1.4}
+  .note-byline>span{font-size:.8rem;font-weight:700}
+  .note-byline a{font-size:.7rem;opacity:.55;font-variant-numeric:tabular-nums}
+  .note-byline a:hover{color:var(--primary);opacity:1}
+  .note-mark{margin-left:auto;color:var(--primary);opacity:.6;font-size:1.1rem}
+  h1,h2{font-size:1.15rem;font-weight:700;line-height:1.6;overflow-wrap:anywhere;margin-bottom:14px}
+  h1{font-size:1.5rem}h2 a:hover{color:var(--primary)}
+  .note-card :global(.note-body){font-size:.93rem;line-height:1.9;overflow-wrap:anywhere}
+  .note-card :global(.note-body> :first-child){margin-top:0}
+  .note-card :global(.note-body> :last-child){margin-bottom:0}
+  .note-images{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:22px}
+  .note-images.single-image{grid-template-columns:1fr}
+  .note-images figure{min-width:0}
+  .note-images a{display:block;border-radius:14px;overflow:hidden;background:var(--btn-regular-bg)}
+  .note-images img{width:100%;aspect-ratio:4/3;object-fit:cover;transition:transform .25s}
+  .single-image img{aspect-ratio:auto;max-height:480px;object-fit:contain}
+  .note-images a:hover img{transform:scale(1.02)}
+  figcaption{font-size:.7rem;line-height:1.6;opacity:.55;padding:7px 2px 0;overflow-wrap:anywhere}
+  .note-footer{display:flex;align-items:center;flex-wrap:wrap;gap:16px;margin-top:24px;padding-top:16px;border-top:1px solid var(--line-divider)}
+  .note-tags{display:flex;gap:8px;flex-wrap:wrap;font-size:.7rem;color:var(--primary);flex:1}
+  .note-tags span{padding:4px 9px;background:var(--btn-regular-bg);border-radius:7px;overflow-wrap:anywhere;max-width:100%}
+  .note-permalink{font-size:.72rem;opacity:.55;white-space:nowrap}
+  .note-permalink:hover{color:var(--primary);opacity:1}
+  a:focus-visible{outline:2px solid var(--primary);outline-offset:4px;border-radius:4px}
+  @media(max-width:640px){.note-card{padding:24px 22px}.note-card :global(.note-body){font-size:.88rem}.note-meta{margin-bottom:18px}.note-images{gap:8px}}
+  @media(prefers-reduced-motion:reduce){.note-images img{transition:none}.note-images a:hover img{transform:none}}
+</style>

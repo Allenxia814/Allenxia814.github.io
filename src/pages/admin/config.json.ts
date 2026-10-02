@@ -47,6 +47,28 @@ export const GET: APIRoute = () => {
           ],
         },
         {
+          name: "notes", label: "短记", label_singular: "短记",
+          folder: "src/content/notes", create: true, delete: true,
+          extension: "md", format: "yaml-frontmatter",
+          slug: "{{year}}-{{month}}-{{day}}-{{hour}}-{{minute}}-{{second}}-{{slug}}",
+          preview_path: "notes/entry/{{slug}}/",
+          summary: "{{title}} · {{published}} · 隐藏：{{draft}}",
+          sortable_fields: ["published", "title"],
+          fields: [
+            { name: "title", label: "简短标题", widget: "string", hint: "给这段记录起一个短标题，方便管理与搜索。" },
+            { name: "published", label: "记录时间", widget: "datetime", default: "{{now}}", date_format: "YYYY-MM-DD", time_format: "HH:mm", format: "YYYY-MM-DDTHH:mm:ssZ", picker_utc: false, hint: "默认当前时间，页面统一显示北京时间；此字段记录时间，不用于定时发布。" },
+            { name: "draft", label: "隐藏短记", widget: "boolean", default: false, hint: "部署完成后，从短记列表、独立链接、搜索和短记 RSS 移除。公开仓库中的源文件仍可查看。" },
+            { name: "tags", label: "标签", widget: "list", required: false, default: [] },
+            { name: "body", label: "短记内容", widget: "markdown" },
+            { name: "images", label: "配图", label_singular: "图片", widget: "list", required: false, default: [], collapsed: true,
+              fields: [
+                { name: "image", label: "图片", widget: "image", hint: "上传图片，或填写 HTTPS 图片地址。" },
+                { name: "alt", label: "图片说明", widget: "string", required: false },
+              ],
+            },
+          ],
+        },
+        {
           name: "friends", label: "友链", format: "json",
           files: [{
             name: "friends", label: "管理友链", file: "src/data/friends.json",

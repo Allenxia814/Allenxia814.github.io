@@ -1,0 +1,18 @@
+---
+import type { CollectionEntry } from "astro:content";
+import MainGridLayout from "../../../layouts/MainGridLayout.astro";
+import NoteCard from "../../../components/notes/NoteCard.astro";
+import { getPublishedNotes } from "../../../utils/notes-utils";
+import { url } from "../../../utils/url-utils";
+
+export async function getStaticPaths() {
+  return (await getPublishedNotes()).map(entry => ({ params: { slug: entry.id }, props: { entry } }));
+}
+interface Props { entry: CollectionEntry<"notes">; }
+const { entry } = Astro.props;
+---
+<MainGridLayout title={`${entry.data.title} · 短记`} description="Airglow 的一则短记">
+  <a class="back-link" href={url('/notes/')}>← 全部短记</a>
+  <NoteCard entry={entry} detail />
+</MainGridLayout>
+<style>.back-link{display:inline-block;color:var(--primary);font-size:.8rem;margin:0 0 16px 8px}.back-link:focus-visible{outline:2px solid var(--primary);outline-offset:4px}</style>

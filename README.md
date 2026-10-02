@@ -44,6 +44,8 @@ pnpm new-post my-first-post
 
 友链页面 `/friends/` 可在后台 **友链 → 管理友链** 中添加、排序、修改、移除或隐藏网站卡片。使用说明见 [docs/FRIENDS.md](docs/FRIENDS.md)。
 
+短记页面 `/notes/` 用时间线记录碎片想法，可在后台 **短记 → 新建短记** 中发布文字、标签与多张配图，支持修改、删除和隐藏。每条有独立链接，支持搜索、自动分页和独立 RSS。使用说明见 [docs/NOTES.md](docs/NOTES.md)。
+
 GitHub Actions Variables：`PUBLIC_CMS_AUTH_URL`、`PUBLIC_GISCUS_CATEGORY_ID`。这些是公开配置；未配置时后台显示设置提示，评论暂不显示。OAuth 密钥只存放在 Cloudflare Worker Secrets。
 
 已迁移至 Astro 7 与新内容集合 API，并升级 Svelte 和构建依赖。认证逻辑可用 `node --test services/github-oauth/worker.test.mjs` 检查。
